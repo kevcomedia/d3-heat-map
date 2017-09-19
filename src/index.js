@@ -32,7 +32,15 @@ const yearAxis = svg.append('g')
 // Month axis. No variables needed because everything's set up here.
 svg.append('g')
   .attr('transform', `translate(${padding.left}, 0)`)
-  .call(d3.axisLeft(yScale).ticks(12, '%B'));
+  .call(d3.axisLeft(yScale).ticks(12, '%B'))
+  .call((axis) => {
+    const axisLength = height - padding.top - padding.bottom;
+    // Center the labels between the tick marks.
+    // Dividing the axis length by 12 gives the length of each "tick span".
+    // Further dividing by two gives that halfway point, hence 24.
+    axis.selectAll('text')
+      .attr('transform', `translate(0, ${axisLength / 24})`);
+  });
 
 d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   // I passed a dummy second argument to `new Date()` because it interprets a
