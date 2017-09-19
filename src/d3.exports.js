@@ -4,7 +4,8 @@
  *
  * Export only from the modules that you need to keep the bundle size minimal.
  */
-export {max, min} from 'd3-array';
+export {extent, max, min} from 'd3-array';
+export {axisBottom} from 'd3-axis';
 export {json} from 'd3-request';
-export {scaleLinear} from 'd3-scale';
+export {scaleLinear, scaleTime} from 'd3-scale';
 export {select, selectAll} from 'd3-selection';
