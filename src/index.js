@@ -15,6 +15,9 @@ const padding = {
   top: 50
 };
 
+const yearAxisLength = width - padding.left - padding.right;
+const monthAxisLength = height - padding.top - padding.bottom;
+
 const svg = d3.select('#chart')
   .attr('width', width)
   .attr('height', height);
@@ -35,12 +38,11 @@ svg.append('g')
   .attr('transform', `translate(${padding.left}, 0)`)
   .call(d3.axisLeft(yScale).ticks(12, '%B'))
   .call((axis) => {
-    const axisLength = height - padding.top - padding.bottom;
     // Center the labels between the tick marks.
     // Dividing the axis length by 12 gives the length of each "tick span".
     // Further dividing by two gives that halfway point, hence 24.
     axis.selectAll('text')
-      .attr('transform', `translate(0, ${axisLength / 24})`);
+      .attr('transform', `translate(0, ${monthAxisLength / 24})`);
   });
 
 d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
@@ -49,8 +51,20 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax
   const dateFromYear = ({year}) => new Date(year, 0);
   const years = d3.extent(monthlyVariance, dateFromYear);
+  const yearValues = years.map((date) => date.getYear());
 
+  // Last minute scale/axis set up
   xScale.domain(years);
-
   yearAxis.call(d3.axisBottom(xScale));
+
+  // Plot data
+  svg.selectAll('rect')
+    .data(monthlyVariance)
+    .enter()
+    .append('rect')
+    .attr('fill', 'black')
+    .attr('x', ({year}) => xScale(new Date(year, 0)))
+    .attr('y', ({month}) => yScale(new Date(null, month - 1)))
+    .attr('width', Math.ceil(yearAxisLength / (yearValues[1] - yearValues[0])))
+    .attr('height', Math.ceil(monthAxisLength / 12));
 });
