@@ -45,6 +45,12 @@ svg.append('g')
       .attr('transform', `translate(0, ${monthAxisLength / 24})`);
   });
 
+// I'd like to use scaleSequential instead of scaleQuantize, but I don't know
+// how to reverse the interpolation (I'd like red to represent the hotter
+// temperatures).
+const colorScale = d3.scaleQuantize()
+  .range(d3.schemeRdBu[11].reverse());
+
 d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   // I passed a dummy second argument to `new Date()` because it interprets a
   // single number value as the number of milliseconds since January 1, 1970.
@@ -53,16 +59,21 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   const years = d3.extent(monthlyVariance, dateFromYear);
   const yearValues = years.map((date) => date.getYear());
 
+  const addBaseTemp = (variance) => baseTemperature + variance;
+  const temperatures
+      = d3.extent(monthlyVariance, ({variance}) => addBaseTemp(variance));
+
   // Last minute scale/axis set up
   xScale.domain(years);
   yearAxis.call(d3.axisBottom(xScale));
+  colorScale.domain(temperatures);
 
   // Plot data
   svg.selectAll('rect')
     .data(monthlyVariance)
     .enter()
     .append('rect')
-    .attr('fill', 'black')
+    .attr('fill', ({variance}) => colorScale(addBaseTemp(variance)))
     .attr('x', ({year}) => xScale(new Date(year, 0)))
     .attr('y', ({month}) => yScale(new Date(null, month - 1)))
     .attr('width', Math.ceil(yearAxisLength / (yearValues[1] - yearValues[0])))

@@ -7,5 +7,6 @@
 export {extent, max, min} from 'd3-array';
 export {axisBottom, axisLeft} from 'd3-axis';
 export {json} from 'd3-request';
-export {scaleLinear, scaleTime} from 'd3-scale';
+export {scaleLinear, scaleQuantize, scaleTime} from 'd3-scale';
+export {schemeRdBu} from 'd3-scale-chromatic';
 export {select, selectAll} from 'd3-selection';
