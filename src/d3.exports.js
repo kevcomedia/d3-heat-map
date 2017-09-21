@@ -10,3 +10,4 @@ export {json} from 'd3-request';
 export {scaleLinear, scaleQuantize, scaleTime} from 'd3-scale';
 export {schemeRdBu} from 'd3-scale-chromatic';
 export {select, selectAll} from 'd3-selection';
+export {timeFormat} from 'd3-time-format';

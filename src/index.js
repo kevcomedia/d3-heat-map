@@ -1,4 +1,5 @@
 import * as d3 from './d3.exports.js';
+import tip from 'd3-tip';
 
 // const temperatureDataUrl = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json';
 const temperatureDataUrl = '../data/global-temperature.json';
@@ -51,6 +52,10 @@ svg.append('g')
 const colorScale = d3.scaleQuantize()
   .range(d3.schemeRdBu[11].reverse());
 
+// Tooltip
+const tooltip = tip()
+  .attr('class', 'tooltip');
+
 d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   // I passed a dummy second argument to `new Date()` because it interprets a
   // single number value as the number of milliseconds since January 1, 1970.
@@ -68,6 +73,19 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   yearAxis.call(d3.axisBottom(xScale));
   colorScale.domain(temperatures);
 
+  tooltip .html(({year, month, variance}) => {
+    const dummyDate = new Date(year, month - 1);
+    const formatMonth = d3.timeFormat('%B');
+
+    return `<p class="tooltip-date">${formatMonth(dummyDate)} ${year}</p>
+      <p class="tooltip-temperature">
+        ${addBaseTemp(variance).toFixed(2)} &deg;C
+      </p>
+      <p class="tooltip-variance">${variance} &deg;C`;
+  });
+
+  svg.call(tooltip);
+
   // Plot data
   svg.selectAll('rect')
     .data(monthlyVariance)
@@ -77,5 +95,7 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
     .attr('x', ({year}) => xScale(new Date(year, 0)))
     .attr('y', ({month}) => yScale(new Date(null, month - 1)))
     .attr('width', Math.ceil(yearAxisLength / (yearValues[1] - yearValues[0])))
-    .attr('height', Math.ceil(monthAxisLength / 12));
+    .attr('height', Math.ceil(monthAxisLength / 12))
+    .on('mouseover', tooltip.show)
+    .on('mouseout', tooltip.hide);
 });
