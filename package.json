@@ -41,6 +41,8 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
-    "d3": "^4.10.2"
+    "d3": "^4.10.2",
+    "d3-scale-chromatic": "^1.1.1",
+    "d3-tip": "^0.7.1"
   }
 }
