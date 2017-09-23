@@ -51,8 +51,43 @@ svg.append('g')
 // I'd like to use scaleSequential instead of scaleQuantize, but I don't know
 // how to reverse the interpolation (I'd like red to represent the hotter
 // temperatures).
-const colorScale = d3.scaleQuantize()
-  .range(d3.schemeRdBu[11].reverse());
+const colorScheme = d3.schemeRdBu[11].reverse();
+const colorScale = d3.scaleQuantize().range(colorScheme);
+
+// Legend
+const legendCellSize = {
+  width: 30,
+  height: 20
+};
+
+const legendSize = {
+  width: legendCellSize.width * colorScheme.length,
+  height: legendCellSize.height
+};
+
+const legendPos = {
+  x: width - padding.right - legendSize.width,
+  y: height - padding.bottom / 2
+};
+
+const legend = svg.append('g')
+  .attr('class', 'legend')
+  .attr('transform', `translate(${legendPos.x}, ${legendPos.y})`)
+  .attr('width', legendSize.width)
+  .attr('height', legendSize.height);
+
+const legendGroup = legend.selectAll('.legend-group')
+  .data(colorScheme)
+  .enter()
+  .append('g')
+  .attr('class', 'legend-group')
+  .attr('transform', (d, i) => `translate(${legendCellSize.width * i}, 0)`);
+
+legendGroup
+  .append('rect')
+  .attr('fill', (d) => d)
+  .attr('width', legendCellSize.width)
+  .attr('height', legendCellSize.height);
 
 // Tooltip
 const tooltip = tip()
