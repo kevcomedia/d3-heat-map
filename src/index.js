@@ -32,10 +32,12 @@ const yScale = d3.scaleTime()
   .range([padding.top, height - padding.bottom]);
 
 const yearAxis = svg.append('g')
+  .attr('class', 'axisYear')
   .attr('transform', `translate(0, ${height - padding.bottom})`);
 
 // Month axis. No variables needed because everything's set up here.
 svg.append('g')
+  .attr('class', 'axisMonth')
   .attr('transform', `translate(${padding.left}, 0)`)
   .call(d3.axisLeft(yScale).ticks(12, '%B'))
   .call((axis) => {
@@ -87,10 +89,11 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   svg.call(tooltip);
 
   // Plot data
-  svg.selectAll('rect')
+  svg.selectAll('.cellPlot')
     .data(monthlyVariance)
     .enter()
     .append('rect')
+    .attr('class', 'cellPlot')
     .attr('fill', ({variance}) => colorScale(addBaseTemp(variance)))
     .attr('x', ({year}) => xScale(new Date(year, 0)))
     .attr('y', ({month}) => yScale(new Date(null, month - 1)))
