@@ -27,9 +27,13 @@ const svg = d3.select('#chart')
 const xScale = d3.scaleTime()
   .range([padding.left, width - padding.right]);
 
-const yScale = d3.scaleTime()
-  .domain([new Date(null, 0, 1), new Date(null, 11, 31)])
-  .range([padding.top, height - padding.bottom]);
+const monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+const yScale = d3.scaleBand()
+  .domain(monthNames)
+  .rangeRound([padding.top, height - padding.bottom]);
 
 const yearAxis = svg.append('g')
   .attr('class', 'axisYear')
@@ -39,14 +43,7 @@ const yearAxis = svg.append('g')
 svg.append('g')
   .attr('class', 'axisMonth')
   .attr('transform', `translate(${padding.left}, 0)`)
-  .call(d3.axisLeft(yScale).ticks(12, '%B'))
-  .call((axis) => {
-    // Center the labels between the tick marks.
-    // Dividing the axis length by 12 gives the length of each "tick span".
-    // Further dividing by two gives that halfway point, hence 24.
-    axis.selectAll('text')
-      .attr('transform', `translate(0, ${monthAxisLength / 24})`);
-  });
+  .call(d3.axisLeft(yScale).tickSize(0));
 
 // I'd like to use scaleSequential instead of scaleQuantize, but I don't know
 // how to reverse the interpolation (I'd like red to represent the hotter
@@ -143,7 +140,7 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
     .attr('class', 'cellPlot')
     .attr('fill', ({variance}) => colorScale(addBaseTemp(variance)))
     .attr('x', ({year}) => xScale(new Date(year, 0)))
-    .attr('y', ({month}) => yScale(new Date(null, month - 1)))
+    .attr('y', ({month}) => yScale(monthNames[month - 1]))
     .attr('width', Math.ceil(yearAxisLength / (yearValues[1] - yearValues[0])))
     .attr('height', Math.ceil(monthAxisLength / 12))
     .on('mouseover', tooltip.show)
