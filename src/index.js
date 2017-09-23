@@ -10,10 +10,10 @@ const temperatureDataUrl = '../data/global-temperature.json';
 const width = 1100;
 const height = 500;
 const padding = {
-  bottom: 50,
+  bottom: 70,
   left: 60,
   right: 50,
-  top: 50
+  top: 20
 };
 
 const yearAxisLength = width - padding.left - padding.right;
@@ -32,10 +32,12 @@ const yScale = d3.scaleTime()
   .range([padding.top, height - padding.bottom]);
 
 const yearAxis = svg.append('g')
+  .attr('class', 'axisYear')
   .attr('transform', `translate(0, ${height - padding.bottom})`);
 
 // Month axis. No variables needed because everything's set up here.
 svg.append('g')
+  .attr('class', 'axisMonth')
   .attr('transform', `translate(${padding.left}, 0)`)
   .call(d3.axisLeft(yScale).ticks(12, '%B'))
   .call((axis) => {
@@ -49,8 +51,43 @@ svg.append('g')
 // I'd like to use scaleSequential instead of scaleQuantize, but I don't know
 // how to reverse the interpolation (I'd like red to represent the hotter
 // temperatures).
-const colorScale = d3.scaleQuantize()
-  .range(d3.schemeRdBu[11].reverse());
+const colorScheme = d3.schemeRdBu[11].reverse();
+const colorScale = d3.scaleQuantize().range(colorScheme);
+
+// Legend
+const legendCellSize = {
+  width: 35,
+  height: 20
+};
+
+const legendSize = {
+  width: legendCellSize.width * colorScheme.length,
+  height: legendCellSize.height
+};
+
+const legendPos = {
+  x: width - padding.right - legendSize.width,
+  y: height - padding.bottom / 2
+};
+
+const legend = svg.append('g')
+  .attr('class', 'legend')
+  .attr('transform', `translate(${legendPos.x}, ${legendPos.y})`)
+  .attr('width', legendSize.width)
+  .attr('height', legendSize.height);
+
+const legendGroup = legend.selectAll('.legend-group')
+  .data(colorScheme)
+  .enter()
+  .append('g')
+  .attr('class', 'legend-group')
+  .attr('transform', (d, i) => `translate(${legendCellSize.width * i}, 0)`);
+
+legendGroup
+  .append('rect')
+  .attr('fill', (d) => d)
+  .attr('width', legendCellSize.width)
+  .attr('height', legendCellSize.height);
 
 // Tooltip
 const tooltip = tip()
@@ -86,11 +123,24 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
 
   svg.call(tooltip);
 
+  const temperatureStep
+    = (temperatures[1] - temperatures[0]) / colorScheme.length;
+  legendGroup
+    .data(d3.range(temperatures[0], temperatures[1], temperatureStep))
+    .append('text')
+    .attr('font-size', 12)
+    .attr('text-anchor', 'middle')
+    .attr('x', legendCellSize.width / 2)
+    .attr('y', legendCellSize.height)
+    .attr('dy', '1em')
+    .text((d) => d.toFixed(1));
+
   // Plot data
-  svg.selectAll('rect')
+  svg.selectAll('.cellPlot')
     .data(monthlyVariance)
     .enter()
     .append('rect')
+    .attr('class', 'cellPlot')
     .attr('fill', ({variance}) => colorScale(addBaseTemp(variance)))
     .attr('x', ({year}) => xScale(new Date(year, 0)))
     .attr('y', ({month}) => yScale(new Date(null, month - 1)))
