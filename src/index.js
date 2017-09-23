@@ -10,10 +10,10 @@ const temperatureDataUrl = '../data/global-temperature.json';
 const width = 1100;
 const height = 500;
 const padding = {
-  bottom: 50,
+  bottom: 70,
   left: 60,
   right: 50,
-  top: 50
+  top: 20
 };
 
 const yearAxisLength = width - padding.left - padding.right;
@@ -56,7 +56,7 @@ const colorScale = d3.scaleQuantize().range(colorScheme);
 
 // Legend
 const legendCellSize = {
-  width: 30,
+  width: 35,
   height: 20
 };
 
@@ -122,6 +122,18 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
   });
 
   svg.call(tooltip);
+
+  const temperatureStep
+    = (temperatures[1] - temperatures[0]) / colorScheme.length;
+  legendGroup
+    .data(d3.range(temperatures[0], temperatures[1], temperatureStep))
+    .append('text')
+    .attr('font-size', 12)
+    .attr('text-anchor', 'middle')
+    .attr('x', legendCellSize.width / 2)
+    .attr('y', legendCellSize.height)
+    .attr('dy', '1em')
+    .text((d) => d.toFixed(1));
 
   // Plot data
   svg.selectAll('.cellPlot')
