@@ -1,0 +1,6 @@
+deploy:
+  provider: surge
+  project: ./dist/
+  domain: gckev-heat-map.surge.sh
+  skip_cleanup: true
+  on: master
