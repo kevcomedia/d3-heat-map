@@ -1,7 +1,7 @@
 {
   "name": "d3-heat-map",
   "description": "freeCodeCamp D3 heat map project",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
