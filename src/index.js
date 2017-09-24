@@ -143,6 +143,10 @@ d3.json(temperatureDataUrl, ({baseTemperature, monthlyVariance}) => {
     .attr('y', ({month}) => yScale(monthNames[month - 1]))
     .attr('width', Math.ceil(yearAxisLength / (yearValues[1] - yearValues[0])))
     .attr('height', Math.ceil(monthAxisLength / 12))
+    .style('opacity', 0)
     .on('mouseover', tooltip.show)
-    .on('mouseout', tooltip.hide);
+    .on('mouseout', tooltip.hide)
+    .transition()
+    .delay((d, i) => i * 0.3)
+    .style('opacity', 1);
 });
