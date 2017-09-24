@@ -1,4 +1,5 @@
 body {
+  background-color: #e8e8e8;
   color: #444;
   font-family: sans-serif;
 }
@@ -7,6 +8,13 @@ h1,
 h2,
 .moreInfo {
   text-align: center;
+}
+
+.container {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,.3);
+  width: 1200px;
+  margin: 0 auto;
 }
 
 #chart {
