@@ -13,7 +13,7 @@ const padding = {
   bottom: 70,
   left: 60,
   right: 50,
-  top: 20
+  top: 10
 };
 
 const yearAxisLength = width - padding.left - padding.right;
