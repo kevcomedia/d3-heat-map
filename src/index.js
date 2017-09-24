@@ -1,7 +1,9 @@
 import * as d3 from './d3.exports.js';
 import tip from 'd3-tip';
 
-const temperatureDataUrl = '../data/global-temperature.json';
+const temperatureDataUrl = process.env.NODE_ENV === 'production'
+  ? 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json'
+  : '../data/global-temperature.json';
 
 // Graph dimensions
 // I could have put everything in an object, but that might get awkward later
